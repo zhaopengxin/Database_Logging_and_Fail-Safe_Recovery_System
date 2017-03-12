@@ -175,36 +175,7 @@ bool LogMgr::redo(vector <LogRecord*> log){
    */
 void LogMgr::undo(vector <LogRecord*> log, int txnum){
 	if(txnum == NULL_TX){
-		// map<int, LogRecord*> toUndo;
-  //       for (auto iter = log.begin(); iter != log.end(); ++iter) {
-  //       	auto i = tx_table.find((*iter)->getTxID());
-  //           if (tx_table.count((*iter)->getTxID()) && (i->second).status != C) {
-  //               if ((*iter)->getType() == COMMIT || (*iter)->getType() == END) {
-  //                   tx_table.erase((*iter)->getTxID());
-  //               }
-  //               else {
-  //                   if ((*iter)->getType() == UPDATE) {
-  //                       toUndo[(*iter)->getLSN()] = (*iter);
-  //                   }else if((*iter)->getType() == CLR){
-  //                   	CompensationLogRecord* clr = dynamic_cast<CompensationLogRecord*> (*iter);
-  //                   	toUndo.erase(clr->getprevLSN());
-  //                   	// if(clr->getUndoNextLSN() == NULL_LSN){
-  //                   	// 	int endlsn = se->nextLSN();
-  //                   	// 	int prelsn = clr->getLSN();
-  //                   	// 	LogRecord* endlog = new LogRecord(endlsn, prelsn, (*iter)->getTxID(), END);
-  //                   		//toUndo[(*iter)->getLSN()] = (*iter);
-  //                   		// for(auto it = log.begin(); it != log.end(); ++it){
-  //                   		// 	if((*it)->getLSN() == clr->getUndoNextLSN()){
-  //                   		// 		toUndo[(*it)->getLSN()] = (*it);
-  //                   		// 		//clr = dynamic_cast<CompensationLogRecord*> (*it);
-  //                   		// 	}
-  //                   		// }
-  //                   	//}
-  //                   	//toUndo[(*iter)->getLSN()] = (*iter);
-  //                   }
-  //               }
-  //           }
-  //       }
+		
         map<int, LogRecord*> toUndo;
 
         for(auto iter = tx_table.begin(); iter != tx_table.end(); ++iter){
@@ -256,42 +227,11 @@ void LogMgr::undo(vector <LogRecord*> log, int txnum){
         		}
         	}
         }
-        // for(auto iter = tx_table.begin(); iter != tx_table.end();){
-        // 	int txid = iter->second.lastLSN;
-        // 	for(auto ite = log.rbegin(); ite != log.rend(); ++ite){
-        // 		if((*ite)->getTxID() == txid){
-        // 			if((*ite)->getType() == COMMIT || (*ite)->getType() == END){
-        // 				iter = tx_table.erase(iter);
-        // 				break;
-        // 			}else if((*ite)->getType() == UPDATE || (*ite)->getType() == CLR){
-        // 				toUndo[(*ite)->getLSN()] = (*ite);
-        // 			}
-        // 		}
-        // 	}
-        // }
+        
 
         while (!toUndo.empty()) {
             auto top = toUndo.rbegin();
-            // if((top->second)->getType() == CLR){
-            // 	txnum = (top->second)->getTxID();
-            // 	int prev_lsn = (top->second)->getLSN();
-            // 	//int lsn = se->nextLSN();
-            // 	CompensationLogRecord* clr = dynamic_cast<CompensationLogRecord*>(top->second);
-            // 	if (!se->pageWrite(clr->getPageID(), clr->getOffset(), clr->getAfterImage(), prev_lsn)) return;
-            //     // CompensationLogRecord* clrLog = new CompensationLogRecord(lsn, prev_lsn, txnum, clr->getPageID(), clr->getOffset(), clr->getAfterImage(), clr->getUndoNextLSN());
-            //     // logtail.push_back(clrLog);
-            //     // setLastLSN(txnum, lsn);
-				
-            //     if (clr->getUndoNextLSN() == NULL_LSN) {
-            //         int elsn = se->nextLSN();
-            //         //int prev_lsn = lsn;
-            //         LogRecord* endLog = new LogRecord(elsn, prev_lsn, txnum, END);
-            //         logtail.push_back(endLog);
-            //         setLastLSN(txnum, prev_lsn);
-            //         tx_table.erase(txnum);
-            //     }
-                
-            // }
+            
                      
             if ((top->second)->getType() == UPDATE) {
             	UpdateLogRecord* upLog = dynamic_cast<UpdateLogRecord*>(top->second);
@@ -321,8 +261,7 @@ void LogMgr::undo(vector <LogRecord*> log, int txnum){
 	}// end recover scenario
 	else if(txnum != NULL_TX){
 		vector<LogRecord*> ToUndo;
-		// vector<LogRecord*> log_disk = stringToLRVector(se->getLog());
-  //   	log_disk.insert(log_disk.end(), log.begin(), log.end());
+		
         for (auto iter = log.rbegin(); iter != log.rend(); ++iter) {
             if ((*iter)->getTxID() == txnum) {
             	if ((*iter)->getType() == END)
@@ -365,12 +304,7 @@ void LogMgr::undo(vector <LogRecord*> log, int txnum){
 				
 			}
 		}// end list
-		// int lsn = se->nextLSN();
-	 //    int prev_lsn = getLastLSN(txnum);
-	 //    LogRecord* endLog = new LogRecord(lsn, prev_lsn, txnum, END);
-	 //    logtail.push_back(endLog);
-	 //    setLastLSN(txnum, lsn);
-	 //    tx_table.erase(txnum);
+		
 	}// end abort scenario
 }
 /*
@@ -437,9 +371,7 @@ void LogMgr::pageFlushed(int page_id){
 	flushLogTail(se->getLSN(page_id));
 }
 int LogMgr::write(int txid, int page_id, int offset, string input, string oldtext){
-	// map <int, txTableEntry> tx_table;
- 	//  map <int, int> dirty_page_table;
- 	//  vector <LogRecord*> logtail; 
+	
  	int lsn = se->nextLSN();
  	int prevLSN = getLastLSN(txid);
  	UpdateLogRecord* updateLogRecord = new UpdateLogRecord(lsn, prevLSN, txid, page_id, offset, oldtext, input);
